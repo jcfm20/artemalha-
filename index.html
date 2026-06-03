@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTEMALHA • Design Artesanal Contemporâneo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Cormorant+Garamond:wght@400;500;600&display=swap');
+
+        :root {
+            --offwhite: #F7F4EF;
+            --areia: #D8CBB8;
+            --azulmar: #5D7B8A;
+            --preto: #1E1E1E;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--offwhite);
+            color: var(--preto);
+        }
+
+        /* HEADER */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            background: rgba(247, 244, 239, 0.97);
+            backdrop-filter: blur(16px);
+            z-index: 100;
+            border-bottom: 1px solid var(--areia);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .monograma {
+            width: 52px; height: 52px;
+            background: var(--azulmar);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 33px;
+            letter-spacing: -1.5px;
+        }
+
+        nav a {
+            margin-left: 35px;
+            text-decoration: none;
+            color: var(--preto);
+            font-size: 1.05rem;
+        }
+        nav a:hover { color: var(--azulmar); }
+
+        .cart-icon { position: relative; font-size: 26px; cursor: pointer; }
+        .cart-count {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--azulmar); color: white;
+            font-size: 12px; width: 20px; height: 20px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* HERO */
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.42)), url('https://picsum.photos/id/1015/2000/1400') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 7rem;
+            line-height: 1.05;
+            letter-spacing: -6px;
+        }
+
+        /* CONCEITO + DETALHES */
+        .conceito { padding: 140px 0 100px; background: white; text-align: center; }
+        .title { font-family: 'Cormorant Garamond', serif; font-size: 4rem; margin-bottom: 50px; }
+        .text-conceito { font-size: 1.35rem; max-width: 780px; margin: 0 auto 80px; color: #444; line-height: 1.75; }
+
+        .detalhes-grid {
+            display: flex;
+            justify-content: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        .detalhe-item {
+            flex: 1;
+            text-align: center;
+            padding: 40px 30px;
+            position: relative;
+        }
+        .detalhe-item:not(:last-child)::after {
+            content: ''; position: absolute; top: 30%; right: 0;
+            width: 1px; height: 40%; background: #ddd;
+        }
+        .detalhe-item .label { font-size: 0.9rem; letter-spacing: 3px; color: #777; }
+        .detalhe-item h3 { font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; margin-top: 10px; }
+
+        /* COLEÇÃO - CARDS MENORES */
+        .colecao { padding: 120px 0; background: var(--offwhite); }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        .product {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+        .product:hover { transform: translateY(-8px); }
+
+        .product-image {
+            height: 240px;
+            padding: 25px;
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .product-info h3 { font-size: 1.6rem; }
+        .price { font-size: 1.5rem; margin: 8px 0; }
+
+        /* MODAL MAIS BONITO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 36px;
+            cursor: pointer;
+            color: #222;
+        }
+
+        /* Imagem principal em quadradinho pequeno */
+        .modal-image {
+            height: 260px;
+            width: 460px;
+            margin: 90px auto 15px;
+            background: #f8f8f8;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #eee;
+        }
+
+        .modal-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .modal-thumbnails {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding: 10px 0 20px;
+        }
+
+        .modal-thumbnails img {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .modal-thumbnails img.active {
+            border-color: var(--azulmar);
+        }
+
+        .modal-info {
+            text-align: center;
+            padding: 0 30px 35px;
+        }
+
+        .modal-info h2 { font-size: 1.85rem; margin-bottom: 8px; }
+        .modal-info p { color: var(--azulmar); margin-bottom: 18px; }
+        .modal-price { font-size: 1.75rem; margin-bottom: 25px; font-weight: 300; }
+
+        .btn-whatsapp, .btn-add-cart {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .btn-whatsapp { background: #25D366; color: white; border: none; }
+        .btn-add-cart { background: var(--preto); color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <span class="monograma">A</span>
+                <span class="brand">ARTEMALHA</span>
+            </div>
+            <nav>
+                <a href="#">Início</a>
+                <a href="#bolsas">Bolsas</a>
+                <a href="#">Álbum</a>
+                <a href="#">Personalização</a>
+                <a href="#">Sobre</a>
+                <a href="#">Contato</a>
+            </nav>
+            <div onclick="toggleCart()" class="cart-icon">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>ARTE<br>CROCHET</h1>
+            <p class="hero-subtitle">Bolsas artesanais contemporâneas com identidade premium</p>
+            <a href="#bolsas" class="btn-explore">EXPLORAR COLEÇÃO</a>
+        </div>
+    </section>
+
+    <!-- CONCEITO -->
+    <section class="conceito">
+        <div class="container">
+            <h2 class="title">Conceito</h2>
+            <p class="text-conceito">
+                A artemalha transforma o artesanal em design contemporâneo através de bolsas 
+                produzidas manualmente com estética minimalista e acabamento refinado.
+            </p>
+
+            <div class="detalhes-grid">
+                <div class="detalhe-item">
+                    <span class="label">TEXTURA</span>
+                    <h3>Fio de Malha</h3>
+                </div>
+                <div class="detalhe-item">
+                    <span class="label">ACABAMENTO</span>
+                    <h3>Refinado</h3>
+                </div>
+                <div class="detalhe-item">
+                    <span class="label">ESTÉTICA</span>
+                    <h3>Minimalista Premium</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COLEÇÃO -->
+    <section id="bolsas" class="colecao">
+        <div class="container">
+            <h2 class="title">Coleção Atual</h2>
+            <div class="products-grid" id="products-grid"></div>
+        </div>
+    </section>
+
+    <!-- MODAL -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            
+            <div class="modal-image">
+                <img id="modalMainImage" src="" alt="">
+            </div>
+            
+            <div class="modal-thumbnails" id="modalThumbnails"></div>
+            
+            <div class="modal-info">
+                <h2 id="modalTitle"></h2>
+                <p id="modalDescription"></p>
+                <span id="modalPrice" class="modal-price"></span>
+                
+                <button onclick="comprarWhatsAppModal()" class="btn-whatsapp">
+                    COMPRAR VIA WHATSAPP
+                </button>
+                <button onclick="addToCartFromModal()" class="btn-add-cart">
+                    ADICIONAR AO CARRINHO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const products = {
+            1: { id: 1, title: "Shoulder Bag", price: 160, description: "Minimalista • Leve • Urbana", images: ["https://picsum.photos/id/201/800/1100","https://picsum.photos/id/237/800/1100","https://picsum.photos/id/866/800/1100"] },
+            2: { id: 2, title: "Chunky Bag", price: 120, description: "Encorpada • Presença forte", images: ["https://picsum.photos/id/237/800/1100","https://picsum.photos/id/1015/800/1100","https://picsum.photos/id/133/800/1100"] },
+            3: { id: 3, title: "Baguette Bag", price: 150, description: "Editorial • Elegante", images: ["https://picsum.photos/id/866/800/1100","https://picsum.photos/id/201/800/1100","https://picsum.photos/id/180/800/1100"] },
+            4: { id: 4, title: "Handbag", price: 100, description: "Sofisticada • Estruturada", images: ["https://picsum.photos/id/1015/800/1100","https://picsum.photos/id/866/800/1100","https://picsum.photos/id/237/800/1100"] },
+            5: { id: 5, title: "Mid Beach Bag", price: 160, description: "Ampla • Natural • Casual", images: ["https://picsum.photos/id/133/800/1100","https://picsum.photos/id/201/800/1100","https://picsum.photos/id/251/800/1100"] },
+            6: { id: 6, title: "Larger Shoulder", price: 140, description: "Confortável • Prática", images: ["https://picsum.photos/id/180/800/1100","https://picsum.photos/id/237/800/1100","https://picsum.photos/id/866/800/1100"] },
+            7: { id: 7, title: "Strap Bag", price: 130, description: "Versátil • Urbana • Premium", images: ["https://picsum.photos/id/251/800/1100","https://picsum.photos/id/201/800/1100","https://picsum.photos/id/133/800/1100"] },
+            8: { id: 8, title: "Mini Candy Bag", price: 90, description: "Compacta • Moderna", images: ["https://picsum.photos/id/64/800/1100","https://picsum.photos/id/866/800/1100","https://picsum.photos/id/237/800/1100"] },
+            9: { id: 9, title: "Classic Bag", price: 135, description: "Clássica reinterpretada • Sofisticada", images: ["https://picsum.photos/id/315/800/1100","https://picsum.photos/id/201/800/1100","https://picsum.photos/id/180/800/1100"] }
+        };
+
+        let cart = [];
+        let currentProductId = null;
+
+        function openModal(id) {
+            currentProductId = id;
+            const product = products[id];
+            document.getElementById('modalMainImage').src = product.images[0];
+            document.getElementById('modalTitle').textContent = product.title;
+            document.getElementById('modalDescription').textContent = product.description;
+            document.getElementById('modalPrice').textContent = `R$ ${product.price}`;
+
+            const thumbs = document.getElementById('modalThumbnails');
+            thumbs.innerHTML = '';
+            product.images.forEach((src, i) => {
+                const img = document.createElement('img');
+                img.src = src;
+                if (i === 0) img.classList.add('active');
+                img.onclick = () => changeModalImage(src, img);
+                thumbs.appendChild(img);
+            });
+
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function changeModalImage(src, thumb) {
+            document.getElementById('modalMainImage').src = src;
+            document.querySelectorAll('.modal-thumbnails img').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function comprarWhatsAppModal() {
+            const product = products[currentProductId];
+            const message = `*Quero comprar:* ${product.title} - R$ ${product.price}`;
+            window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(message)}`, '_blank');
+            closeModal();
+        }
+
+        function addToCartFromModal() {
+            if (currentProductId) addToCart(currentProductId);
+            closeModal();
+        }
+
+        function addToCart(id) {
+            const product = products[id];
+            const existing = cart.find(item => item.id === id);
+            if (existing) existing.quantity += 1;
+            else cart.push({ ...product, quantity: 1 });
+
+            updateCartCount();
+            showToast(`${product.title} adicionado ao carrinho!`);
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.style = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#25D366;color:white;padding:14px 24px;border-radius:50px;z-index:10000;';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // Fechar ao clicar fora
+        document.getElementById('productModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+        // Inicialização - 9 modelos
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('products-grid');
+            Object.values(products).forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'product';
+                div.onclick = () => openModal(p.id);
+                div.innerHTML = `
+                    <div class="product-image"><img src="${p.images[0]}" alt="${p.title}"></div>
+                    <div class="product-info">
+                        <h3>${p.title}</h3>
+                        <p>${p.description}</p>
+                        <span class="price">R$ ${p.price}</span>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        });
+    </script>
+</body>
+</html>
