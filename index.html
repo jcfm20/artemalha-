@@ -59,11 +59,7 @@
             letter-spacing: -1.5px;
         }
 
-        nav {
-            display: flex;
-            align-items: center;
-        }
-
+        nav { display: flex; align-items: center; }
         nav a {
             margin-left: 35px;
             text-decoration: none;
@@ -265,7 +261,7 @@
         
         .btn-whatsapp:active, .btn-add-cart:active { transform: scale(0.98); }
 
-        /* CARRINHO */
+        /* CARRINHO / FINALIZAÇÃO */
         .cart-modal {
             max-width: 440px;
             height: 90vh;
@@ -355,10 +351,9 @@
             margin-bottom: 0;
         }
 
-        /* RESPONSIVIDADE BÁSICA */
         @media (max-width: 768px) {
             .header-inner { padding: 15px 20px; }
-            nav { display: none; } /* Opcional: Oculta links estruturais no mobile puro para focar no catálogo */
+            nav { display: none; }
             .hero-content h1 { font-size: 4.5rem; }
             .detalhes-grid { flex-direction: column; padding: 0 20px; }
             .detalhe-item:not(:last-child)::after { display: none; }
@@ -441,7 +436,7 @@
                 <h2 id="modalTitle"></h2>
                 <p id="modalDescription"></p>
                 <span id="modalPrice" class="modal-price"></span>
-                <button onclick="comprarWhatsAppModal()" class="btn-whatsapp">COMPRAR VIA WHATSAPP</button>
+                <button onclick="comprarDiretoModal()" class="btn-whatsapp">COMPRAR VIA WHATSAPP</button>
                 <button onclick="addToCartFromModal()" class="btn-add-cart">ADICIONAR AO CARRINHO</button>
             </div>
         </div>
@@ -450,7 +445,7 @@
     <div id="cartModal" class="modal">
         <div class="modal-content cart-modal">
             <span class="close-btn" onclick="toggleCart()">×</span>
-            <h2>Seu Carrinho</h2>
+            <h2 id="cart-modal-title">Seu Carrinho</h2>
             
             <div class="cart-scrollable-area">
                 <div id="cart-items"></div>
@@ -462,7 +457,7 @@
                 <div class="freight-section">
                     <h4>Calcular Frete + Endereço</h4>
                     <div class="address-grid">
-                        <input type="text" id="cep" placeholder="CEP" maxlength="8">
+                        <input type="text" id="cep" placeholder="CEP (Apenas números)" maxlength="8">
                         <input type="text" id="rua" placeholder="Rua">
                         <input type="text" id="numero" placeholder="Número">
                         <input type="text" id="complemento" placeholder="Complemento">
@@ -495,6 +490,8 @@
         };
 
         let cart = [];
+        let backupCart = []; // Guarda o carrinho principal se a pessoa fizer uma compra direta
+        let isDirectPurchase = false;
         let selectedShipping = null;
         let currentProductId = null;
 
@@ -558,11 +555,25 @@
             closeModal();
         }
 
-        function comprarWhatsAppModal() {
+        // NOVO: Abre a janela de fechamento diretamente para este produto
+        function comprarDiretoModal() {
+            if (!currentProductId) return;
+            
+            isDirectPurchase = true;
+            backupCart = [...cart]; // Salva o carrinho que já existia para não apagar
+            
+            // Monta o carrinho apenas com o produto atual
             const product = products[currentProductId];
-            const message = `*Quero comprar:* ${product.title} - R$ ${product.price},00`;
-            window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(message)}`, '_blank');
+            cart = [{ ...product, quantity: 1 }];
+            
             closeModal();
+            
+            // Abre a janela de endereço com o título customizado
+            document.getElementById('cart-modal-title').textContent = "Finalizar Pedido";
+            const modal = document.getElementById('cartModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; 
+            renderCart();
         }
 
         function toggleCart() {
@@ -572,7 +583,17 @@
             if (isOpen) {
                 modal.style.display = 'none';
                 document.body.style.overflow = ''; 
+                
+                // Se era uma compra direta, devolve o carrinho original antigo
+                if (isDirectPurchase) {
+                    cart = [...backupCart];
+                    isDirectPurchase = false;
+                    document.getElementById('cart-modal-title').textContent = "Seu Carrinho";
+                    updateCartCount();
+                }
             } else {
+                isDirectPurchase = false;
+                document.getElementById('cart-modal-title').textContent = "Seu Carrinho";
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden'; 
                 renderCart();
@@ -603,7 +624,7 @@
                     </div>
                     <div style="text-align:right;">
                         <strong>R$ ${itemTotal.toFixed(2).replace('.', ',')}</strong><br>
-                        <button onclick="removeFromCart(${index})" style="color:red;background:none;border:none;font-size:1.2rem;cursor:pointer;margin-top:2px;">×</button>
+                        ${isDirectPurchase ? '' : `<button onclick="removeFromCart(${index})" style="color:red;background:none;border:none;font-size:1.2rem;cursor:pointer;margin-top:2px;">×</button>`}
                     </div>
                 `;
                 container.appendChild(div);
@@ -622,8 +643,6 @@
             const cep = document.getElementById('cep').value.trim();
             const container = document.getElementById('freight-options');
             container.innerHTML = '';
-            
-            // BUG RESOLVIDO: Limpa a seleção antiga ao rodar um cálculo novo
             selectedShipping = null; 
 
             if (cep.length < 5) {
@@ -669,11 +688,10 @@
 
         function checkoutWhatsApp() {
             if (cart.length === 0) {
-                alert("Seu carrinho está vazio!");
+                alert("Nenhum produto selecionado!");
                 return;
             }
             
-            // MELHORIA: Valida se o usuário clicou em calcular e escolheu o frete
             if (document.getElementById('cep').value.trim() !== "" && !selectedShipping) {
                 alert("Por favor, selecione uma opção de frete antes de continuar.");
                 return;
@@ -696,15 +714,56 @@
             const cep = document.getElementById('cep').value;
             const rua = document.getElementById('rua').value;
             const numero = document.getElementById('numero').value;
+            const complemento = document.getElementById('complemento').value;
+            const bairro = document.getElementById('bairro').value;
             const cidade = document.getElementById('cidade').value;
             const estado = document.getElementById('estado').value;
 
             if (cep && rua) {
-                message += `\n\n📍 *Endereço de entrega:*\n${rua}, ${numero}\n${cidade}/${estado} - CEP ${cep}`;
+                message += `\n\n📍 *Endereço de entrega:*\n${rua}, ${numero} ${complemento ? `- ${complemento}` : ''}\n${bairro} - ${cidade}/${estado}\nCEP: ${cep}`;
             }
 
             const phone = "5511999999999";
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // INTEGRADO: API ViaCEP com busca inteligente automática
+        document.getElementById('cep').addEventListener('input', function(e) {
+            const cep = e.target.value.replace(/\D/g, ""); // Remove letras
+            e.target.value = cep;
+
+            if (cep.length === 8) {
+                document.getElementById('rua').value = "Buscando...";
+                document.getElementById('bairro').value = "Buscando...";
+                document.getElementById('cidade').value = "Buscando...";
+                document.getElementById('estado').value = "...";
+
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            document.getElementById('rua').value = data.logradouro;
+                            document.getElementById('bairro').value = data.bairro;
+                            document.getElementById('cidade').value = data.localidade;
+                            document.getElementById('estado').value = data.uf;
+                            document.getElementById('numero').focus(); // Joga o foco pro número automaticamente
+                        } else {
+                            alert("CEP não encontrado. Digite o endereço manualmente.");
+                            limparCamposEndereco();
+                        }
+                    })
+                    .catch(() => {
+                        alert("Erro ao buscar o CEP. Tente preencher manualmente.");
+                        limparCamposEndereco();
+                    });
+            }
+        });
+
+        function limparCamposEndereco() {
+            document.getElementById('rua').value = "";
+            document.getElementById('bairro').value = "";
+            document.getElementById('cidade').value = "";
+            document.getElementById('estado').value = "";
         }
 
         document.getElementById('productModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
